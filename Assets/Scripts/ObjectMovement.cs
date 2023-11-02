@@ -49,7 +49,6 @@ public class NewBehaviourScript : MonoBehaviour
         if (collision.gameObject.tag == "Ground")
         {
             //If the GameObject has the same tag as specified, output this message in the console
-            Debug.Log("Do something else here");
             isGrounded = true;
         }
     }
