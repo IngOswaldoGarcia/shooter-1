@@ -8,18 +8,45 @@ public class Laser : MonoBehaviour
     [SerializeField] private Transform _muzzlePoint;
     [SerializeField] private float _maxLength;
 
+    [SerializeField] private ParticleSystem _muzzleParticles;
+    [SerializeField] private ParticleSystem _hitParticles;
+    [SerializeField] private float _damage;
+    
+
     private bool keyHeldDown = false;
-    private float repeatRate = 0.05f;
-    private float timeBetweenShoots = 0.05f;
+    [SerializeField] private float _shootDuration;
+    [SerializeField] private float timeBetweenShoots;
 
     void Awake()
     {
-        _beam.enabled = false;        
+        _beam.enabled = false;     
     }
 
     void Activate()
     {
-        _beam.enabled = true;        
+        _beam.enabled = true;      
+        SoundSystem.instance.PlaySound();  
+        _muzzleParticles.Play();
+        //
+
+            // Check for a hit and apply damage to the enemy if hit
+        RaycastHit hit;
+        Ray ray = new Ray(_muzzlePoint.position, _muzzlePoint.forward);
+        if (Physics.Raycast(ray, out hit, _maxLength))
+        {
+            Collider hitCollider = hit.collider;
+            if (hitCollider.CompareTag("Target"))
+            {
+                _hitParticles.Play();
+                if (hitCollider.TryGetComponent(out EnemyActions enemyActions))
+                {
+                    Vector3 _hitDirection = ray.direction;
+
+                    enemyActions.ApplyDamage(_damage);
+                    enemyActions.MoveBack(_hitDirection);
+                }
+            }
+        }
     }
 
     void Deactivate()
@@ -27,39 +54,36 @@ public class Laser : MonoBehaviour
         _beam.enabled = false;       
         _beam.SetPosition(0, _muzzlePoint.position);
         _beam.SetPosition(1, _muzzlePoint.position); 
+/*         _muzzleParticles.Stop();
+         */
     }
 
     void Update()
     {
-/*         if(Input.GetMouseButtonDown(0)) {
-            Activate();
-            Invoke("Deactivate", timeBetweenShoots);
-        } */
-        //else if(Input.GetMouseButtonUp(0)) Deactivate();
-
         if (Input.GetMouseButtonDown(0))
         {
             if (!keyHeldDown)
             {
                 keyHeldDown = true;
                 StartCoroutine(RepeatFunction());
+/*                 if (hit.transform.CompareTag("Target")) {
+                    _hitParticles.Play(); 
+                } */
             }
-        }else if(Input.GetMouseButtonUp(0)) keyHeldDown = false;
-/*         else
-        {
+        }else if(Input.GetMouseButtonUp(0)){
             keyHeldDown = false;
-            Debug.Log("Held down false");
-        } */
+            _muzzleParticles.Stop();
+            _hitParticles.Stop();
+            //_hitParticles.Stop();
+        } 
     }
 
     private IEnumerator RepeatFunction()
     {
         while (keyHeldDown)
         {
-            // Call your function here
-            Debug.Log("Repeated");
             Activate();
-            yield return new WaitForSeconds(repeatRate);
+            yield return new WaitForSeconds(_shootDuration);
             Deactivate();
             yield return new WaitForSeconds(timeBetweenShoots);
         }
@@ -73,6 +97,21 @@ public class Laser : MonoBehaviour
 
         _beam.SetPosition(0, _muzzlePoint.position);
         _beam.SetPosition(1, hitPosition);
+
+        _hitParticles.transform.position = hitPosition;
+
+/*         if (cast)
+        {
+            Collider hitCollider = hit.collider;
+            if (hitCollider.CompareTag("Target") && keyHeldDown)
+            {
+                Debug.Log(true);
+                _hitParticles.Play();   
+            if(hitCollider.TryGetComponent(out EnemyActions enemyActions)){
+                enemyActions.ApplyDamage(_damage);
+            }
+        } */
+
     }
 
 }
