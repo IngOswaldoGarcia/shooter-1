@@ -4,46 +4,38 @@ using UnityEngine;
 
 public class EnemyActions : MonoBehaviour
 {
-    public Transform player;
+ public Transform player;
+    [SerializeField] private float initialHealth = 100f;
+    [SerializeField] public float moveDistance = 1f;
+    [SerializeField] public float moveDuration = 2f; 
+
     private Rigidbody rb;
-
-    [SerializeField] private float _initialHealth;
-    private float _currentHealth;
-
-    [SerializeField] public float moveDistance;
-    [SerializeField] public float moveDuration = 0.000001f; // Adjust this value to control the smoothness of the movement.
-
+    private float currentHealth;
     private Vector3 initialPosition;
     private Vector3 targetPosition;
     private float moveStartTime;
-
     private Vector3 originalPosition; // Store the original position.
-
-    // Start is called before the first frame update
 
     void Awake()
     {
-        rb = this.GetComponent<Rigidbody>();
-        _currentHealth = _initialHealth;
+        rb = GetComponent<Rigidbody>();
+        currentHealth = initialHealth;
         originalPosition = transform.position;
+        targetPosition = originalPosition;
+        initialPosition = originalPosition;
     }
-    void Start()
-    {
-        transform.position = originalPosition;
-    }
-    // Update is called once per frame
+
     void Update()
     {
-        transform.position = Vector3.MoveTowards(this.transform.position, new Vector3(this.player.position.x, this.transform.position.y, this.player.position.z), 3 * Time.deltaTime);
+        // Smoothly follow the player's position along the X and Z axes.
+        float movementSpeed = 3f;
+        Vector3 targetPositionXZ = new Vector3(player.position.x, transform.position.y, player.position.z);
+        transform.position = Vector3.MoveTowards(transform.position, targetPositionXZ, movementSpeed * Time.deltaTime);
+
         if (Time.time - moveStartTime < moveDuration)
         {
-            // Interpolate the position for a smooth movement
-
+            // Interpolate the position for a smooth movement.
             float t = (Time.time - moveStartTime) / moveDuration;
-            Debug.Log("Time.time " + Time.time);
-            Debug.Log("moveStartTime " + moveStartTime);
-            Debug.Log("moveDuration " + moveDuration);
-            Debug.Log("t "+ t);
             transform.position = Vector3.Lerp(initialPosition, targetPosition, t);
         }
     }
@@ -55,17 +47,21 @@ public class EnemyActions : MonoBehaviour
         moveStartTime = Time.time;
     }
 
-    public void ApplyDamage(float damage){
-        //Debug.Log("damage applied" + _currentHealth);
-        if(_currentHealth <= 0) return;
+    public void ApplyDamage(float damage)
+    {
+        if (currentHealth <= 0)
+            return;
 
-        _currentHealth -= damage;
+        currentHealth -= damage;
 
-        if(_currentHealth <= 0){
+        if (currentHealth <= 0)
+        {
             Destruct();
         }
     }
-    private void Destruct(){
+
+    private void Destruct()
+    {
         Destroy(gameObject);
     }
 }
