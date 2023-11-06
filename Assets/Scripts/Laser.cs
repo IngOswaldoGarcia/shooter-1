@@ -99,19 +99,6 @@ public class Laser : MonoBehaviour
         _beam.SetPosition(1, hitPosition);
 
         _hitParticles.transform.position = hitPosition;
-
-/*         if (cast)
-        {
-            Collider hitCollider = hit.collider;
-            if (hitCollider.CompareTag("Target") && keyHeldDown)
-            {
-                Debug.Log(true);
-                _hitParticles.Play();   
-            if(hitCollider.TryGetComponent(out EnemyActions enemyActions)){
-                enemyActions.ApplyDamage(_damage);
-            }
-        } */
-
     }
 
 }

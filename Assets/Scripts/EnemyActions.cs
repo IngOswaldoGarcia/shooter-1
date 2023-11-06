@@ -62,6 +62,7 @@ public class EnemyActions : MonoBehaviour
 
     private void Destruct()
     {
+        EnemySoundSystem.instance.ExplosionSound();
         Instantiate(explosion, transform.position, Quaternion.identity);
         Destroy(gameObject);
     }
