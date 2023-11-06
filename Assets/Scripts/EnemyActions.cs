@@ -6,9 +6,9 @@ public class EnemyActions : MonoBehaviour
 {
  public Transform player;
     [SerializeField] private float initialHealth = 100f;
-    [SerializeField] public float moveDistance = 1f;
-    [SerializeField] public float moveDuration = 2f; 
-
+    [SerializeField] private float moveDistance = 1f;
+    [SerializeField] private float moveDuration = 2f; 
+    [SerializeField] private GameObject explosion; 
     private Rigidbody rb;
     private float currentHealth;
     private Vector3 initialPosition;
@@ -62,6 +62,7 @@ public class EnemyActions : MonoBehaviour
 
     private void Destruct()
     {
+        Instantiate(explosion, transform.position, Quaternion.identity);
         Destroy(gameObject);
     }
 }
