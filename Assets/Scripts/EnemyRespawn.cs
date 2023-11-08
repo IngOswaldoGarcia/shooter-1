@@ -6,7 +6,7 @@ public class EnemyRespawn : MonoBehaviour
 {
     public GameObject objectPrefab; // Reference to the prefab of the object you want to respawn.
     public Transform spawnPoint; // The position where the object should respawn.
-    private float respawnInterval = 5.0f; // The time interval for respawning (in seconds).
+    private float respawnInterval = 9.0f; // The time interval for respawning (in seconds).
 
     private void Start()
     {

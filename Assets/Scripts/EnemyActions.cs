@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EnemyActions : MonoBehaviour
 {
- public Transform player;
+    private GameObject player;
     [SerializeField] private float initialHealth = 100f;
     [SerializeField] private float moveDistance = 1f;
     [SerializeField] private float moveDuration = 2f; 
@@ -23,13 +23,14 @@ public class EnemyActions : MonoBehaviour
         originalPosition = transform.position;
         targetPosition = originalPosition;
         initialPosition = originalPosition;
+        player = GameObject.Find("Player");
     }
 
     void Update()
     {
         // Smoothly follow the player's position along the X and Z axes.
         float movementSpeed = 3f;
-        Vector3 targetPositionXZ = new Vector3(player.position.x, transform.position.y, player.position.z);
+        Vector3 targetPositionXZ = new Vector3(player.transform.position.x, transform.position.y, player.transform.position.z);
         transform.position = Vector3.MoveTowards(transform.position, targetPositionXZ, movementSpeed * Time.deltaTime);
 
         if (Time.time - moveStartTime < moveDuration)
@@ -62,6 +63,8 @@ public class EnemyActions : MonoBehaviour
 
     private void Destruct()
     {
+        Debug.Log("Destruct method called");
+        CameraShaker.Invoke();
         EnemySoundSystem.instance.ExplosionSound();
         Instantiate(explosion, transform.position, Quaternion.identity);
         Destroy(gameObject);
