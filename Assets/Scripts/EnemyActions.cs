@@ -64,7 +64,7 @@ public class EnemyActions : MonoBehaviour
     private void Destruct()
     {
         Debug.Log("Destruct method called");
-        CameraShaker.Invoke();
+        CameraShaker.instance.CameraShake();
         EnemySoundSystem.instance.ExplosionSound();
         Instantiate(explosion, transform.position, Quaternion.identity);
         Destroy(gameObject);
