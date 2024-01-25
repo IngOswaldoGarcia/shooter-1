@@ -2,54 +2,46 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(CharacterController))]
 public class NewBehaviourScript : MonoBehaviour
 {
-    private Rigidbody rb;
-    public float moveSpeed = 5.0f; // Adjust this to set the movement speed
+    public float moveSpeed = 8.0f; // Adjust this to set the movement speed
+    public float runSpeed = 10.0f;
     public float jumpForce = 10.0f;
-    private bool isGrounded = true;
+    public float jumpHeight = 1.9f;
+    public float gravityScale = -20f;
+    Vector3 moveInput = Vector3.zero;
+    CharacterController characterController;
 
-    // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
-        rb = GetComponent<Rigidbody>();
+        characterController = GetComponent<CharacterController>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        
-        // Get the object's current Transform
-        Transform objectTransform = transform;
+        Move();
+    }
 
-        // Calculate the new position based on user input or any other logic
-        Vector3 moveDirection = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
-        Vector3 newPosition = objectTransform.position + moveDirection * moveSpeed * Time.deltaTime;
+    private void Move(){
+        if(characterController.isGrounded){
+            moveInput = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+            moveInput = Vector3.ClampMagnitude(moveInput, 1f);
+            if(Input.GetButton("Sprint")){
+                moveInput = transform.TransformDirection(moveInput) * runSpeed;
+            }else{
+                moveInput = transform.TransformDirection(moveInput) * moveSpeed;
+            }
 
-        // Update the object's position
-        objectTransform.position = newPosition;
-
-        // Check if the object is grounded (you need to implement this)
-        if (isGrounded && Input.GetButtonDown("Jump"))
-        {
-            Jump();
+            // Check if the object is grounded (you need to implement this)
+            if (Input.GetButtonDown("Jump"))
+            {
+                moveInput.y = Mathf.Sqrt(jumpHeight * -2f * gravityScale);
+            }
         }
+        moveInput.y += gravityScale * Time.deltaTime;
+        characterController.Move(moveInput * Time.deltaTime);
     }
 
-    void Jump()
-    {
-        rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-        isGrounded = false;
-    }
-
-    //Detect collisions between the GameObjects with Colliders attached
-    void OnCollisionEnter(Collision collision)
-    {
-        //Check for a match with the specific tag on any GameObject that collides with your GameObject
-        if (collision.gameObject.tag == "Ground")
-        {
-            //If the GameObject has the same tag as specified, output this message in the console
-            isGrounded = true;
-        }
-    }
 }
