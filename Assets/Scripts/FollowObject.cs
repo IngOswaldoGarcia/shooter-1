@@ -20,18 +20,19 @@ public class FollowObject : MonoBehaviour
     {
         if (GameController.instance.player == null) return;
 
-        if (GameController.instance.rightClick){
-            Vector3 desiredPosition = GameController.instance.player.transform.position;
-            transform.position = Vector3.SmoothDamp(transform.position, desiredPosition, ref velocity, smoothSpeed * Time.deltaTime);
+/*         if (GameController.instance.rightClick){
+            Vector3 characterPosition = GameController.instance.player.transform.position;
+            transform.position = characterPosition;
+            transform.rotation = GameController.instance.player.transform.rotation;
             transform.eulerAngles = new Vector3(0f, 0f, 0f);
-        } else{
+        } else{ */
             transform.eulerAngles = initialRotation;
             // Calcula la posición a la que la cámara debe moverse
             Vector3 desiredPosition = GameController.instance.player.transform.position - (transform.forward * distance) + offset;
 
             // Aplica la posición deseada a la cámara de manera suave
             transform.position = Vector3.SmoothDamp(transform.position, desiredPosition, ref velocity, smoothSpeed * Time.deltaTime);
-        }
+       // }
 
 
 
